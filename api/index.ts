@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import payload from 'payload';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import type { Request, Response } from 'express';
 
 const app = express();
@@ -51,13 +52,23 @@ const initPayload = async () => {
       const cwd = process.cwd();
       console.log('Current working directory:', cwd);
       
-      // In Vercel, files are in /vercel/path0, but we need to ensure config is accessible
-      // Payload looks for payload.config.ts in the current working directory
-      // We'll let Payload auto-detect, but ensure the path is correct
+      // Try to dynamically import the config, or let Payload auto-detect
+      let payloadConfig;
+      try {
+        // Try to import the config file dynamically
+        const configPath = path.join(cwd, 'payload.config.ts');
+        console.log('Attempting to load config from:', configPath);
+        payloadConfig = await import(configPath);
+      } catch (importError) {
+        console.log('Could not import config directly, letting Payload auto-detect');
+        // Let Payload auto-detect the config
+        payloadConfig = undefined;
+      }
       
       await payload.init({
         secret: process.env.PAYLOAD_SECRET,
         express: app,
+        ...(payloadConfig?.default ? { config: payloadConfig.default } : {}),
         onInit: async () => {
           payload.logger.info(`Payload Admin URL: ${payload.getAdminURL()}`);
           payload.logger.info(`Database URI configured: ${process.env.DATABASE_URI ? 'Yes' : 'No'}`);
