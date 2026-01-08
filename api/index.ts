@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import payload from 'payload';
+import path from 'path';
 import type { Request, Response } from 'express';
 
 const app = express();
@@ -45,6 +46,14 @@ const initPayload = async () => {
       if (!process.env.PAYLOAD_SECRET) {
         throw new Error('PAYLOAD_SECRET environment variable is not set!');
       }
+      
+      // Log working directory and check for config file
+      const cwd = process.cwd();
+      console.log('Current working directory:', cwd);
+      
+      // In Vercel, files are in /vercel/path0, but we need to ensure config is accessible
+      // Payload looks for payload.config.ts in the current working directory
+      // We'll let Payload auto-detect, but ensure the path is correct
       
       await payload.init({
         secret: process.env.PAYLOAD_SECRET,
