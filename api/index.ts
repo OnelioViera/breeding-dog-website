@@ -31,11 +31,16 @@ const initPayload = async () => {
 
   initPromise = (async () => {
     try {
+      console.log('Initializing Payload...');
+      console.log('DATABASE_URI:', process.env.DATABASE_URI ? 'Set' : 'Missing');
+      console.log('PAYLOAD_SECRET:', process.env.PAYLOAD_SECRET ? 'Set' : 'Missing');
+      
       await payload.init({
         secret: process.env.PAYLOAD_SECRET || 'your-secret-key-change-this',
         express: app,
         onInit: async () => {
           payload.logger.info(`Payload Admin URL: ${payload.getAdminURL()}`);
+          payload.logger.info(`Database connected: ${process.env.DATABASE_URI ? 'Yes' : 'No'}`);
           payloadInitialized = true;
         },
       });
