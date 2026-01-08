@@ -9,7 +9,7 @@
     "lib": ["ES2020"],
     "types": ["node"]
   },
-  "include": ["server.ts", "payload.config.ts", "src/collections/**/*"],
+  "include": ["server.ts", "payload.config.ts", "src/collections/**/*", "api/**/*"],
   "exclude": ["node_modules", "dist"]
 }
 
