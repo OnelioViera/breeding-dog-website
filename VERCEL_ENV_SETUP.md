@@ -71,7 +71,7 @@ mongodb+srv://ojvwebdesign_db_user:YOUR_ACTUAL_PASSWORD@cluster0.xom7zf6.mongodb
 
 Before redeploying, make sure MongoDB Atlas allows Vercel to connect:
 
-1. Go to [MongoDB Atlas](https://cloud.mongodb.com/)
+1. Go to [MongoDB Atlas](https://cloud.image.pngimage.pngmongodb.com/)
 2. Select your cluster
 3. Click **Network Access** in the left sidebar
 4. Click **Add IP Address**
