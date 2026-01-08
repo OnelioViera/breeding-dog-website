@@ -1,5 +1,7 @@
 # Vercel Fixes Applied and Still Needed
 
+> **Note:** This file was updated to trigger a new Vercel deployment.
+
 ## ✅ Fixed: Config File Issue
 
 I've updated the code to include the Payload config file and collections in the Vercel serverless function. This should fix the error:
