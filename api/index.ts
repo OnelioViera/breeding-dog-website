@@ -7,7 +7,10 @@ import type { Request, Response } from 'express';
 const app = express();
 
 // Enable CORS
-const frontendUrl = process.env.FRONTEND_URL || process.env.VERCEL_URL || '*';
+// In Vercel, use VERCEL_URL to construct the frontend URL, or use FRONTEND_URL if set
+const frontendUrl = process.env.FRONTEND_URL || 
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) || 
+  '*';
 app.use(cors({
   origin: frontendUrl === '*' ? true : frontendUrl,
   credentials: true,
