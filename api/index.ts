@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import payload from 'payload';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import type { Request, Response } from 'express';
 
 const app = express();
@@ -48,27 +47,16 @@ const initPayload = async () => {
         throw new Error('PAYLOAD_SECRET environment variable is not set!');
       }
       
-      // Log working directory and check for config file
+      // Log working directory - Payload will auto-detect config
       const cwd = process.cwd();
       console.log('Current working directory:', cwd);
+      console.log('Payload will look for config in:', path.join(cwd, 'payload.config.ts'));
       
-      // Try to dynamically import the config, or let Payload auto-detect
-      let payloadConfig;
-      try {
-        // Try to import the config file dynamically
-        const configPath = path.join(cwd, 'payload.config.ts');
-        console.log('Attempting to load config from:', configPath);
-        payloadConfig = await import(configPath);
-      } catch (importError) {
-        console.log('Could not import config directly, letting Payload auto-detect');
-        // Let Payload auto-detect the config
-        payloadConfig = undefined;
-      }
-      
+      // Let Payload auto-detect the config file
+      // It looks for payload.config.ts in the current working directory
       await payload.init({
         secret: process.env.PAYLOAD_SECRET,
         express: app,
-        ...(payloadConfig?.default ? { config: payloadConfig.default } : {}),
         onInit: async () => {
           payload.logger.info(`Payload Admin URL: ${payload.getAdminURL()}`);
           payload.logger.info(`Database URI configured: ${process.env.DATABASE_URI ? 'Yes' : 'No'}`);
