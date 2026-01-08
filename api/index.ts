@@ -31,21 +31,40 @@ const initPayload = async () => {
 
   initPromise = (async () => {
     try {
-      console.log('Initializing Payload...');
-      console.log('DATABASE_URI:', process.env.DATABASE_URI ? 'Set' : 'Missing');
-      console.log('PAYLOAD_SECRET:', process.env.PAYLOAD_SECRET ? 'Set' : 'Missing');
+      console.log('=== Payload Initialization ===');
+      console.log('DATABASE_URI:', process.env.DATABASE_URI ? `Set (${process.env.DATABASE_URI.substring(0, 30)}...)` : 'MISSING');
+      console.log('PAYLOAD_SECRET:', process.env.PAYLOAD_SECRET ? 'Set' : 'MISSING');
+      console.log('PAYLOAD_PUBLIC_SERVER_URL:', process.env.PAYLOAD_PUBLIC_SERVER_URL || 'Not set');
+      console.log('FRONTEND_URL:', process.env.FRONTEND_URL || 'Not set');
+      console.log('VERCEL_URL:', process.env.VERCEL_URL || 'Not set');
+      
+      if (!process.env.DATABASE_URI) {
+        throw new Error('DATABASE_URI environment variable is not set!');
+      }
+      
+      if (!process.env.PAYLOAD_SECRET) {
+        throw new Error('PAYLOAD_SECRET environment variable is not set!');
+      }
       
       await payload.init({
-        secret: process.env.PAYLOAD_SECRET || 'your-secret-key-change-this',
+        secret: process.env.PAYLOAD_SECRET,
         express: app,
         onInit: async () => {
           payload.logger.info(`Payload Admin URL: ${payload.getAdminURL()}`);
-          payload.logger.info(`Database connected: ${process.env.DATABASE_URI ? 'Yes' : 'No'}`);
+          payload.logger.info(`Database URI configured: ${process.env.DATABASE_URI ? 'Yes' : 'No'}`);
           payloadInitialized = true;
         },
       });
-    } catch (error) {
-      console.error('Error initializing Payload:', error);
+      
+      console.log('Payload initialized successfully');
+    } catch (error: any) {
+      console.error('=== Payload Initialization Error ===');
+      console.error('Error message:', error?.message);
+      console.error('Error stack:', error?.stack);
+      if (error?.name === 'MongoServerError' || error?.message?.includes('Mongo')) {
+        console.error('MongoDB connection error detected');
+        console.error('Check: 1) DATABASE_URI is correct, 2) MongoDB Atlas Network Access allows Vercel IPs');
+      }
       payloadInitialized = false;
       initPromise = null;
       throw error;
